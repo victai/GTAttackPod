@@ -9,6 +9,16 @@ class MNISTDataset:
         self.num_channels = 1
         self.num_classes = 10
 
+    def get_train_dataset(self):
+        (X_train, y_train), (X_test, y_test) = mnist.load_data()
+
+        X_train = X_train.reshape(X_train.shape[0], self.image_size, self.image_size, self.num_channels)
+        X_train = X_train.astype('float32')
+        X_train /= 255
+        Y_train = np_utils.to_categorical(y_train, self.num_classes)
+        del X_test, y_test
+        return X_train, Y_train
+
     def get_test_dataset(self):
         (X_train, y_train), (X_test, y_test) = mnist.load_data()
 

@@ -30,7 +30,6 @@ def deepfool(image, f, grads, num_classes=10, overshoot=0.02, max_iter=50):
     r_tot = np.zeros(input_shape)
 
     loop_i = 0
-
     while k_i == label and loop_i < max_iter:
 
         pert = np.inf
@@ -55,6 +54,8 @@ def deepfool(image, f, grads, num_classes=10, overshoot=0.02, max_iter=50):
         # compute new perturbed image
         pert_image = image + (1+overshoot)*r_tot
         pert_image = np.clip(pert_image, 0.0, 1.0)
+        if loop_i <= 2:
+            interim = pert_image
         loop_i += 1
 
         # compute new label
@@ -63,7 +64,7 @@ def deepfool(image, f, grads, num_classes=10, overshoot=0.02, max_iter=50):
 
     r_tot = (1+overshoot)*r_tot
 
-    return pert_image
+    return interim, pert_image
 
 
 def prepare_attack(sess, model, x, nb_classes):

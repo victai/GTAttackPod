@@ -87,12 +87,15 @@ class Attack_DeepFool(object):
         deepfool_params = {'num_classes': Y.shape[1], 'overshoot': self.overshoot, 'max_iter': self.max_iter}
 
         X_adv = []
+        X_interim = []
         with click.progressbar(range(0, len(X)), show_pos=True, width=40,
                                bar_template='  [%(bar)s] DeepFool Attacking %(info)s',
                                fill_char='>', empty_char='-') as bar:
             for sample_ind in bar:
-                X_adv.append(deepfool(X[sample_ind:sample_ind + 1, :, :, :], f, grad_fs, **deepfool_params))
-        return np.vstack(X_adv)
+                interim, final = deepfool(X[sample_ind:sample_ind + 1, :, :, :], f, grad_fs, **deepfool_params)
+                X_interim.append(interim)
+                X_adv.append(final)
+        return np.vstack(X_interim), np.vstack(X_adv)
 
 
 class Attack_CarliniL2(object):

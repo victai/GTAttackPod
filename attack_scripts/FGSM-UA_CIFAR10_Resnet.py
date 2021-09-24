@@ -8,13 +8,25 @@ import time
 
 if __name__ == '__main__':
     dataset = CIFAR10Dataset()
-    model = My_CIFAR10_densenet(rel_path='./', depth=10)
+    # model_path = 'models/cifar10_ResNet20v1_model.140.h5'
+    # n = 3
+    # version = 1
+
+    model_path = 'models/cifar10_ResNet110v1_model.071.h5'
+    n = 18
+    version = 1
+    # Computed depth from supplied model parameter n
+    if version == 1:
+        depth = n * 6 + 2
+    elif version == 2:
+        depth = n * 9 + 2
+    # input_shape = x_train.shape[1:]
+    model = My_Resnet((32,32,3), depth, version, model_path=model_path)
     # X_test, Y_test, Y_test_target_ml, Y_test_target_ll = get_data_subset_with_systematic_attack_labels(dataset=dataset,
     #                                                                                                    model=model,
     #                                                                                                    balanced=True,
     #                                                                                                    num_examples=100)
 
-    model_name = 'cifar10_DenseNet40_FGSM'
     pics = [
         [3, 10],
         [6, 9],
@@ -35,7 +47,7 @@ if __name__ == '__main__':
     fgsm = Attack_FastGradientMethod(eps=0.0156)
     time_start = time.time()
     X_test_adv = fgsm.attack(model, X_test, Y_test)
-    np.save(f'outputs/{model_name}_X_test_adv.npy', X_test_adv)
+    np.save(f'outputs/cifar10_ResNet110v1_FGSM_X_test_adv.npy', X_test_adv)
     dur_per_sample = (time.time() - time_start) / len(X_test_adv)
 
     # Evaluate the adversarial examples.

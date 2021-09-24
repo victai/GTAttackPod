@@ -7,6 +7,27 @@ from keras.models import Model
 import keras.backend as K
 import os
 
+def My_CIFAR10_densenet(use_softmax=True, rel_path='./', depth=40, model_path=None):
+    nb_classes = 10
+    # depth = 40
+    nb_dense_block = 3
+    growth_rate = 12
+    nb_filter = 16
+    activation = "softmax"
+
+    # Determine proper input shape
+    inputs = Input(shape=(32, 32, 3))
+
+    x = __create_dense_net(nb_classes, inputs, use_softmax, depth, nb_dense_block,
+                           growth_rate, nb_filter, -1, False, 0.0, 1E-4, activation)
+
+    # Create model.
+    model = Model(inputs, x, name='CIFAR10_densenet40')
+    if model_path:
+        model.load_weights(model_path)
+    # model.load_weights(os.path.join('%smodels/weights' % rel_path, "CIFAR10_densenet.keras_weights.h5"))
+    model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['acc'])
+    return model
 
 def CIFAR10_densenet40(use_softmax=True, rel_path='./'):
     nb_classes = 10
